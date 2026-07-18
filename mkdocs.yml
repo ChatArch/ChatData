@@ -6,4 +6,8 @@ theme:
   language: zh
 nav:
   - 首页: index.md
+  - 新手入门:
+      - MySQL 快速认知与常见概念: getting-started/mysql-basics.md
+  - 设计:
+      - MySQL 免 sudo 用户级运行时: design/mysql-user-runtime.md
   - English: index.en.md
