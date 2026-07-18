@@ -4,7 +4,7 @@
 
 `ChatData` 是 ChatArch 的数据库与数据管理工具。MySQL 是第一条落地的数据库后端能力，但不代表 `ChatData` 只服务于 MySQL。第一版目标是把 MySQL 作为一个可被 ChatData 管理的用户级 runtime：不用 sudo、不用 Docker、不污染系统目录，并能被普通用户通过 CLI 安装、初始化、启动、验证和停止。
 
-本文是第一版设计，不包含实现代码。
+本文是第一版设计。当前仓库已经实现了最小 `chatdata mysql ...` 闭环，实际使用说明见 [MySQL 用户级运行时](../operations/mysql-runtime.md)。
 
 ## 设计目标
 
