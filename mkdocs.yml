@@ -1,0 +1,9 @@
+site_name: ChatData 文档
+site_url: https://ChatArch.github.io/ChatData
+repo_url: https://github.com/ChatArch/ChatData
+theme:
+  name: material
+  language: zh
+nav:
+  - 首页: index.md
+  - English: index.en.md
