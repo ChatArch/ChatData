@@ -58,7 +58,9 @@ def quote_identifier(value: str) -> str:
 
 
 def sql_string_literal(value: str) -> str:
-    return "'" + value.replace("'", "''") + "'"
+    # MySQL treats backslash as an escape character by default, so escape it
+    # before using doubled quotes for SQL string literals.
+    return "'" + value.replace("\\", "\\\\").replace("'", "''") + "'"
 
 
 def default_chatdata_home() -> Path:
@@ -377,8 +379,9 @@ def client_command(
 ) -> list[str]:
     layout = mysql_layout(name=name, version=version, home=home)
     command = [str(layout.runtime / "bin" / binary), f"--socket={layout.socket}", "-uroot"]
-    if database:
-        command.append(database)
+    if database is not None:
+        validate_safe_name(database, field="database name")
+        command.append(f"--database={database}")
     return command
 
 

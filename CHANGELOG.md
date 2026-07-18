@@ -13,4 +13,5 @@
 ### Fixed
 
 - Rejected unsafe MySQL instance and database names before they become local paths, systemd unit names, or SQL identifiers.
+- Escaped MySQL string literals and `--database` client arguments more defensively before issuing helper SQL.
 - Made forced instance initialization clear the existing data directory before running `mysqld --initialize-insecure`.

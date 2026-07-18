@@ -13,6 +13,7 @@ from chatdata.mysql import (
     render_my_cnf,
     render_service,
     service_name,
+    sql_string_literal,
 )
 
 
@@ -78,8 +79,18 @@ def test_mysql_runtime_path_cli_outputs_json(tmp_path):
 def test_client_command_can_select_database(tmp_path):
     command = client_command(name="demo", version="8.4.6", home=tmp_path / "chatdata", database="gitea")
 
-    assert command[-1] == "gitea"
+    assert command[-1] == "--database=gitea"
     assert any(part.startswith("--socket=") for part in command)
+
+
+def test_client_command_rejects_unsafe_database_names(tmp_path):
+    for database in ["", "--user=other", "../gitea"]:
+        try:
+            client_command(name="demo", version="8.4.6", home=tmp_path / "chatdata", database=database)
+        except ValueError as exc:
+            assert "Invalid database name" in str(exc)
+        else:
+            raise AssertionError(f"unsafe database was accepted: {database!r}")
 
 
 def test_create_database_rejects_unsafe_database_names(tmp_path):
@@ -101,9 +112,10 @@ def test_ensure_database_user_sends_password_via_stdin(monkeypatch, tmp_path):
 
     monkeypatch.setattr("chatdata.mysql.subprocess.run", fake_run)
 
-    ensure_database_user("gitea", user="gitea", password="secret'pw", name="demo", version="8.4.6", home=tmp_path / "chatdata")
+    ensure_database_user("gitea", user="gitea", password="secret\\'pw", name="demo", version="8.4.6", home=tmp_path / "chatdata")
 
-    assert "secret'pw" not in " ".join(captured["command"])
-    assert "IDENTIFIED BY 'secret''pw'" in captured["input"]
+    assert "secret" not in " ".join(captured["command"])
+    assert sql_string_literal("secret\\'pw") == "'secret\\\\''pw'"
+    assert "IDENTIFIED BY 'secret\\\\''pw'" in captured["input"]
     assert "GRANT ALL PRIVILEGES ON `gitea`.*" in captured["input"]
     assert captured["check"] is True
