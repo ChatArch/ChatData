@@ -6,4 +6,6 @@ theme:
   language: zh
 nav:
   - 首页: index.md
+  - 设计:
+      - MySQL 免 sudo 用户级运行时: design/mysql-user-runtime.md
   - English: index.en.md
