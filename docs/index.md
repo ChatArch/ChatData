@@ -11,6 +11,7 @@ mkdocs serve
 
 ## 设计文档
 
+- [MySQL 快速认知与常见概念](getting-started/mysql-basics.md)：面向新手理解 SQL 能力、MySQL 基础对象、服务/实例/端口/socket/事务/索引/备份等概念。
 - [MySQL 免 sudo 用户级运行时设计](design/mysql-user-runtime.md)：`chatdata mysql ...` 的第一版 runtime、实例、用户级 service 与验收方案。
 
 英文版见：[index.en.md](index.en.md)。
