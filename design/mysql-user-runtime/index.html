@@ -1,0 +1,1247 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://ChatArch.github.io/ChatData/design/mysql-user-runtime/">
+      
+      
+        <link rel="prev" href="../../operations/mysql-runtime/">
+      
+      
+        <link rel="next" href="../../index.en/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MySQL 免 sudo 用户级运行时 - ChatData 文档</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mysql-sudo" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="ChatData 文档" class="md-header__button md-logo" aria-label="ChatData 文档" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ChatData 文档
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MySQL 免 sudo 用户级运行时
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ChatArch/ChatData" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ChatData 文档" class="md-nav__button md-logo" aria-label="ChatData 文档" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ChatData 文档
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ChatArch/ChatData" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    新手入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    新手入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/mysql-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL 快速认知与常见概念
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运维
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    运维
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/mysql-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL 用户级运行时
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    设计
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL 免 sudo 用户级运行时
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL 免 sudo 用户级运行时
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        背景
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        设计目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        非目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推荐默认路径
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目录布局
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        默认实例设置
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI 树
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1 命令范围
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        安装流程
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实例初始化流程
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        用户级 service
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        安全与凭据
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        非 DBA 用户功能
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现顺序
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        服务器原型计划
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.en/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    English
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        背景
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        设计目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        非目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推荐默认路径
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目录布局
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        默认实例设置
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI 树
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1 命令范围
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        安装流程
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实例初始化流程
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        用户级 service
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        安全与凭据
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        非 DBA 用户功能
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现顺序
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        服务器原型计划
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mysql-sudo">MySQL 免 sudo 用户级运行时设计</h1>
+<h2 id="_1">背景</h2>
+<p><code>ChatData</code> 是 ChatArch 的数据库与数据管理工具。MySQL 是第一条落地的数据库后端能力，但不代表 <code>ChatData</code> 只服务于 MySQL。第一版目标是把 MySQL 作为一个可被 ChatData 管理的用户级 runtime：不用 sudo、不用 Docker、不污染系统目录，并能被普通用户通过 CLI 安装、初始化、启动、验证和停止。</p>
+<p>本文是第一版设计。当前仓库已经实现了最小 <code>chatdata mysql ...</code> 闭环，实际使用说明见 <a href="../../operations/mysql-runtime/">MySQL 用户级运行时</a>。</p>
+<h2 id="_2">设计目标</h2>
+<ul>
+<li>免 sudo：不写 <code>/usr</code>、<code>/etc</code>、系统 systemd unit 或系统用户。</li>
+<li>免 Docker：直接使用官方二进制 tarball 运行 MySQL。</li>
+<li>用户级运行：安装、实例、配置、数据、日志、socket 都放在用户可控目录。</li>
+<li>可验证：每一步都有 <code>doctor</code> / <code>status</code> / <code>ping</code> / <code>query</code> 读回证据。</li>
+<li>可扩展：MySQL 先落地，后续可加 MariaDB、Percona、PostgreSQL、SQLite、DuckDB 等。</li>
+<li>面向非 DBA 用户：命令暴露任务意图，而不是只暴露底层参数。</li>
+</ul>
+<h2 id="_3">非目标</h2>
+<ul>
+<li>第一版不做完整数据库平台。</li>
+<li>第一版不默认暴露公网监听。</li>
+<li>第一版不管理系统级 MySQL/MariaDB 服务。</li>
+<li>第一版不做高可用、主从复制、集群或生产级安全审计。</li>
+<li>第一版不自动修改防火墙、Nginx、systemd system unit 或 root-owned 目录。</li>
+</ul>
+<h2 id="_4">推荐默认路径</h2>
+<p>第一版默认使用官方 MySQL Community Server Generic Linux tarball。</p>
+<p>原因：</p>
+<ul>
+<li>用户明确说的是 MySQL，默认应使用真正的 MySQL，而不是一开始用兼容实现替代。</li>
+<li>官方通用 Linux tarball 可以解压到用户目录运行。</li>
+<li>Ubuntu 22.04 x86_64 + glibc 2.35 这类环境适合使用 <code>linux-glibc2.28-x86_64</code> 系列二进制。</li>
+<li>目标机器应通过 <code>chatdata mysql doctor</code> 预先确认常见运行依赖：<code>libaio</code>、<code>libnuma</code>、OpenSSL、ncurses/tinfo、zlib。</li>
+<li>若目标机器的 <code>systemctl --user</code> 可用，则优先使用用户级 service 管理。</li>
+</ul>
+<p>MariaDB 和 Percona 作为后续可选 engine，不作为 v1 默认。</p>
+<h2 id="_5">目录布局</h2>
+<p>默认根目录由 ChatEnv/配置决定，建议为：</p>
+<pre><code class="language-text">~/.chatarch/chatdata/
+  downloads/
+    mysql-8.4.6-linux-glibc2.28-x86_64.tar.xz
+    manifests/
+      mysql-8.4.6.json
+  runtimes/
+    mysql/
+      8.4.6/
+      current -&gt; 8.4.6
+  instances/
+    mysql/
+      default/
+        my.cnf
+        data/
+        run/
+          mysql.sock
+          mysqld.pid
+        logs/
+          error.log
+          slow.log
+        tmp/
+  services/
+    systemd-user/
+      chatdata-mysql-default.service
+</code></pre>
+<p>设计原则：</p>
+<ul>
+<li><code>runtimes/</code> 保存解压后的不可变二进制 runtime。</li>
+<li><code>instances/</code> 保存每个 MySQL 实例的配置、数据、日志与 socket。</li>
+<li><code>services/</code> 保存 ChatData 生成的 user-level service 模板或副本。</li>
+<li>一个 runtime 可以服务多个实例。</li>
+<li>删除 runtime 前必须确认没有实例使用它。</li>
+</ul>
+<h2 id="_6">默认实例设置</h2>
+<pre><code class="language-text">instance: default
+engine: mysql
+version: 8.4.x LTS, pinned by manifest
+port: 3307
+bind-address: 127.0.0.1
+socket: ~/.chatarch/chatdata/instances/mysql/default/run/mysql.sock
+data: ~/.chatarch/chatdata/instances/mysql/default/data
+logs: ~/.chatarch/chatdata/instances/mysql/default/logs
+mysqlx: 默认关闭，后续需要时再启用 33060
+</code></pre>
+<p>端口默认用 <code>3307</code>，不是 <code>3306</code>，避免撞系统 MySQL。若用户明确要 3306，CLI 可以先检查端口空闲再允许。</p>
+<h2 id="cli">CLI 树</h2>
+<p>MySQL 直接作为 <code>chatdata</code> 的一级业务分支，因为 <code>mysql</code> 名称已经表达了数据库语义，不需要再加一层 <code>db</code>。</p>
+<pre><code class="language-text">chatdata
+  doctor
+  config
+  data ...
+  mysql
+    doctor
+    versions
+    install
+    runtime
+      list
+      current
+      use
+      remove
+    instance
+      init
+      list
+      show
+      config
+      remove
+    service
+      install
+      uninstall
+      start
+      stop
+      restart
+      status
+      logs
+    client
+      path
+      ping
+      shell
+      query
+    database
+      list
+      create
+      drop
+    user
+      list
+      create
+      password
+      grant
+      revoke
+    schema
+      inspect
+      ddl
+    backup
+      dump
+      restore
+      verify
+</code></pre>
+<h2 id="v1">v1 命令范围</h2>
+<p>第一版只做完整闭环，不追求功能多：</p>
+<pre><code class="language-bash">chatdata mysql doctor
+chatdata mysql install --version 8.4.6
+chatdata mysql instance init --name default --port 3307
+chatdata mysql service install --name default
+chatdata mysql service start --name default
+chatdata mysql service status --name default
+chatdata mysql service logs --name default
+chatdata mysql client ping --name default
+chatdata mysql client query --name default --sql &quot;SELECT VERSION();&quot;
+chatdata mysql service stop --name default
+</code></pre>
+<p>验收时必须证明：</p>
+<ul>
+<li>未使用 sudo。</li>
+<li>未使用 Docker。</li>
+<li>runtime 安装在 ChatData 用户目录。</li>
+<li>data/log/socket/config 都在 ChatData 管理目录。</li>
+<li><code>systemctl --user</code> unit 可读回。</li>
+<li><code>mysqladmin ping</code> 成功。</li>
+<li><code>SELECT VERSION();</code> 成功。</li>
+<li>最后状态可停止，或由用户明确要求保留运行。</li>
+</ul>
+<h2 id="_7">安装流程</h2>
+<p><code>chatdata mysql install</code> 负责下载、校验和解压 runtime：</p>
+<ol>
+<li>读取版本 manifest，确定 URL、文件名、预期 checksum。</li>
+<li>下载到 <code>downloads/</code> 临时文件。</li>
+<li>校验 checksum；无法校验时默认失败，除非用户显式允许不安全继续。</li>
+<li>安全解压：拒绝绝对路径、<code>..</code>、symlink/hardlink、非普通文件等危险 tar 成员。</li>
+<li>解压到 <code>runtimes/mysql/&lt;version&gt;</code> 的临时目录，完成后原子切换。</li>
+<li>更新 <code>current</code> symlink 或 manifest。</li>
+<li>运行 <code>mysqld --version</code> 做 runtime smoke。</li>
+</ol>
+<h2 id="_8">实例初始化流程</h2>
+<p><code>chatdata mysql instance init</code> 负责生成实例目录和 <code>my.cnf</code>：</p>
+<ol>
+<li>创建实例目录：<code>data/</code>、<code>logs/</code>、<code>run/</code>、<code>tmp/</code>。</li>
+<li>生成 <code>my.cnf</code>，写入 <code>basedir</code>、<code>datadir</code>、<code>socket</code>、<code>pid-file</code>、<code>log-error</code>、<code>port</code>、<code>bind-address</code>。</li>
+<li>检查端口、socket 路径长度、目录权限。</li>
+<li>调用 <code>mysqld --initialize-insecure</code> 或安全初始化策略。</li>
+<li>写入实例 manifest：runtime version、port、socket、created time。</li>
+</ol>
+<p>第一版可以使用 <code>--initialize-insecure</code>，但必须满足：</p>
+<ul>
+<li>默认只绑定 <code>127.0.0.1</code>。</li>
+<li>默认本地 socket/localhost 使用。</li>
+<li>CLI 明确标记这是本地开发/实验实例。</li>
+<li>后续提供 root 密码设置或凭据管理命令。</li>
+</ul>
+<h2 id="service">用户级 service</h2>
+<p><code>chatdata mysql service install</code> 生成并安装 user-level systemd unit：</p>
+<pre><code class="language-text">~/.config/systemd/user/chatdata-mysql-default.service
+</code></pre>
+<p>unit 只引用用户目录中的 runtime 与 instance：</p>
+<pre><code class="language-ini">[Unit]
+Description=ChatData MySQL instance default
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=&lt;runtime&gt;/bin/mysqld --defaults-file=&lt;instance&gt;/my.cnf
+ExecStop=&lt;runtime&gt;/bin/mysqladmin --socket=&lt;instance&gt;/run/mysql.sock shutdown
+Restart=on-failure
+WorkingDirectory=&lt;instance&gt;
+
+[Install]
+WantedBy=default.target
+</code></pre>
+<p>安装后执行：</p>
+<pre><code class="language-bash">systemctl --user daemon-reload
+systemctl --user enable chatdata-mysql-default.service
+</code></pre>
+<p><code>start/status/stop/logs</code> 分别封装 user systemd 和 MySQL 自身读回：</p>
+<ul>
+<li><code>systemctl --user status ...</code></li>
+<li><code>journalctl --user -u ...</code></li>
+<li>error log tail</li>
+<li><code>mysqladmin ping</code></li>
+</ul>
+<h2 id="_9">安全与凭据</h2>
+<ul>
+<li>密码不能通过 argv 传入。</li>
+<li>支持 <code>--root-password-env NAME</code> 或 ChatEnv sensitive field。</li>
+<li>默认输出 mask 敏感信息。</li>
+<li><code>drop/remove/restore</code> 类操作需要确认或 <code>--yes</code>。</li>
+<li>删除实例前应提示备份。</li>
+<li>默认只监听 localhost。</li>
+</ul>
+<h2 id="dba">非 DBA 用户功能</h2>
+<p>后续高层能力应以任务命名：</p>
+<ul>
+<li><code>doctor</code>：这台机器能不能免 sudo 跑 MySQL？缺什么？端口冲突吗？</li>
+<li><code>install</code>：把 MySQL 安全放进 ChatArch 用户空间。</li>
+<li><code>instance init</code>：创建一个本地数据库实例。</li>
+<li><code>service start/status/stop/logs</code>：像管理应用一样管理 MySQL。</li>
+<li><code>client query</code>：跑一条 SQL 验证可用。</li>
+<li><code>database create/list/drop</code>：管理数据库。</li>
+<li><code>user create/grant</code>：创建应用用户和权限。</li>
+<li><code>backup dump/restore/verify</code>：避免误删数据。</li>
+<li><code>schema inspect/ddl</code>：理解库里有哪些表、列、索引。</li>
+</ul>
+<h2 id="_10">实现顺序</h2>
+<ol>
+<li><code>mysql doctor</code>：检查 OS/arch/lib/port/systemd/path。</li>
+<li><code>mysql install</code>：下载、校验、安全解压官方 tarball。</li>
+<li><code>mysql instance init</code>：生成实例目录与 <code>my.cnf</code>，初始化 data dir。</li>
+<li><code>mysql service install/start/status/stop/logs</code>：用户级 systemd。</li>
+<li><code>mysql client ping/query</code>：证明实例可用。</li>
+<li>再扩展 <code>database</code>、<code>user</code>、<code>backup</code>、<code>schema</code>。</li>
+</ol>
+<h2 id="_11">服务器原型计划</h2>
+<p>在进入正式代码实现前，可以先在本地任务工作区做一次 task-local 原型：</p>
+<pre><code class="language-text">&lt;workspace&gt;/projects/&lt;chatdata-mysql-prototype&gt;/playground/manual-runtime/
+</code></pre>
+<p>原型不写 <code>~/.chatarch/chatdata</code>，先证明下载、解压、初始化、启动、查询、停止的基本链路。成功后再把稳定路径提升为 <code>ChatData</code> CLI 实现。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
