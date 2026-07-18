@@ -31,9 +31,9 @@
 
 - 用户明确说的是 MySQL，默认应使用真正的 MySQL，而不是一开始用兼容实现替代。
 - 官方通用 Linux tarball 可以解压到用户目录运行。
-- Ubuntu 22.04 x86_64 + glibc 2.35 适合使用 `linux-glibc2.28-x86_64` 系列二进制。
-- `zhihong.oray` 上已经具备常见运行依赖：`libaio`、`libnuma`、OpenSSL、ncurses/tinfo、zlib。
-- `systemctl --user` 已可用，适合用户级 service 管理。
+- Ubuntu 22.04 x86_64 + glibc 2.35 这类环境适合使用 `linux-glibc2.28-x86_64` 系列二进制。
+- 目标机器应通过 `chatdata mysql doctor` 预先确认常见运行依赖：`libaio`、`libnuma`、OpenSSL、ncurses/tinfo、zlib。
+- 若目标机器的 `systemctl --user` 可用，则优先使用用户级 service 管理。
 
 MariaDB 和 Percona 作为后续可选 engine，不作为 v1 默认。
 
@@ -279,10 +279,10 @@ systemctl --user enable chatdata-mysql-default.service
 
 ## 服务器原型计划
 
-在进入正式代码实现前，可以先在 `zhihong.oray` 的任务目录做一次 task-local 原型：
+在进入正式代码实现前，可以先在本地任务工作区做一次 task-local 原型：
 
 ```text
-/home/zhihong/Playground/projects/chatdata/07-18-mysql-user-runtime/playground/manual-runtime/
+<workspace>/projects/<chatdata-mysql-prototype>/playground/manual-runtime/
 ```
 
 原型不写 `~/.chatarch/chatdata`，先证明下载、解压、初始化、启动、查询、停止的基本链路。成功后再把稳定路径提升为 `ChatData` CLI 实现。
