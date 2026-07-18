@@ -6,6 +6,8 @@ from chatdata.cli import main
 from chatdata.mysql import (
     DEFAULT_MYSQL_VERSION,
     client_command,
+    create_database,
+    ensure_database_user,
     mysql_asset_urls,
     mysql_layout,
     render_my_cnf,
@@ -29,6 +31,16 @@ def test_mysql_layout_uses_chatdata_home(tmp_path):
     assert layout.config == tmp_path / "chatdata" / "instances" / "mysql" / "demo" / "my.cnf"
     assert layout.socket == tmp_path / "chatdata" / "instances" / "mysql" / "demo" / "run" / "mysql.sock"
     assert layout.service.name == "chatdata-mysql-demo.service"
+
+
+def test_mysql_layout_rejects_unsafe_instance_names(tmp_path):
+    for name in ["../demo", "demo/name", ""]:
+        try:
+            mysql_layout(name=name, version="8.4.6", home=tmp_path / "chatdata")
+        except ValueError as exc:
+            assert "Invalid instance name" in str(exc)
+        else:
+            raise AssertionError(f"unsafe name was accepted: {name!r}")
 
 
 def test_mysql_asset_urls_default_to_official_archive():
@@ -68,3 +80,30 @@ def test_client_command_can_select_database(tmp_path):
 
     assert command[-1] == "gitea"
     assert any(part.startswith("--socket=") for part in command)
+
+
+def test_create_database_rejects_unsafe_database_names(tmp_path):
+    for database in ["", "gitea;DROP", "../gitea"]:
+        try:
+            create_database(database, name="demo", version="8.4.6", home=tmp_path / "chatdata")
+        except ValueError as exc:
+            assert "Invalid database name" in str(exc)
+        else:
+            raise AssertionError(f"unsafe database was accepted: {database!r}")
+
+
+def test_ensure_database_user_sends_password_via_stdin(monkeypatch, tmp_path):
+    captured = {}
+
+    def fake_run(command, input=None, check=False, capture_output=False, text=False):
+        captured.update({"command": command, "input": input, "check": check, "capture_output": capture_output, "text": text})
+        return "ok"
+
+    monkeypatch.setattr("chatdata.mysql.subprocess.run", fake_run)
+
+    ensure_database_user("gitea", user="gitea", password="secret'pw", name="demo", version="8.4.6", home=tmp_path / "chatdata")
+
+    assert "secret'pw" not in " ".join(captured["command"])
+    assert "IDENTIFIED BY 'secret''pw'" in captured["input"]
+    assert "GRANT ALL PRIVILEGES ON `gitea`.*" in captured["input"]
+    assert captured["check"] is True

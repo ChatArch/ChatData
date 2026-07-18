@@ -5,11 +5,11 @@ import hashlib
 import json
 import os
 import platform
+import re
 import shutil
 import socket
 import subprocess
 import tarfile
-import tempfile
 import time
 import urllib.request
 from dataclasses import asdict, dataclass
@@ -22,6 +22,7 @@ DEFAULT_MYSQL_VERSION = "8.4.6"
 DEFAULT_MYSQL_PLATFORM = "linux-glibc2.28-x86_64"
 DEFAULT_MYSQL_PORT = 3307
 DEFAULT_MYSQL_BIND_ADDRESS = "127.0.0.1"
+SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 
 @dataclass(frozen=True)
@@ -44,11 +45,29 @@ class MysqlLayout:
     service: Path
 
 
+def validate_safe_name(value: str, *, field: str) -> str:
+    """Validate names that become local paths, unit names, or SQL identifiers."""
+    if not value or not SAFE_NAME_RE.fullmatch(value):
+        raise ValueError(f"Invalid {field}: {value!r}. Use letters, numbers, dot, underscore, or dash.")
+    return value
+
+
+def quote_identifier(value: str) -> str:
+    validate_safe_name(value, field="database name")
+    return f"`{value.replace('`', '``')}`"
+
+
+def sql_string_literal(value: str) -> str:
+    return "'" + value.replace("'", "''") + "'"
+
+
 def default_chatdata_home() -> Path:
     return get_paths().home_dir / "chatdata"
 
 
 def mysql_layout(name: str = "default", version: str = DEFAULT_MYSQL_VERSION, home: Path | None = None) -> MysqlLayout:
+    validate_safe_name(name, field="instance name")
+    validate_safe_name(version, field="version")
     root = (home or default_chatdata_home()).expanduser()
     instance = root / "instances" / "mysql" / name
     runtimes = root / "runtimes" / "mysql"
@@ -276,8 +295,10 @@ def init_instance(
     mysqld = runtime / "bin" / "mysqld"
     if not mysqld.exists():
         raise FileNotFoundError(f"MySQL runtime not installed: {mysqld}")
-    if layout.data.exists() and any(layout.data.iterdir()) and not force:
-        return {"name": name, "config": str(layout.config), "data": str(layout.data), "initialized": False, "reused": True}
+    if layout.data.exists() and any(layout.data.iterdir()):
+        if not force:
+            return {"name": name, "config": str(layout.config), "data": str(layout.data), "initialized": False, "reused": True}
+        shutil.rmtree(layout.data)
     for child in [layout.data, layout.run, layout.logs, layout.tmp]:
         child.mkdir(parents=True, exist_ok=True)
     layout.config.write_text(render_my_cnf(layout, runtime, port=port, bind_address=bind_address), encoding="utf-8")
@@ -301,6 +322,7 @@ def init_instance(
 
 
 def service_name(name: str = "default") -> str:
+    validate_safe_name(name, field="instance name")
     return f"chatdata-mysql-{name}.service"
 
 
@@ -382,9 +404,36 @@ def query_file(path: Path, name: str = "default", version: str = DEFAULT_MYSQL_V
 
 
 def create_database(database: str, name: str = "default", version: str = DEFAULT_MYSQL_VERSION, home: Path | None = None) -> str:
-    escaped = database.replace("`", "``")
-    sql = f"CREATE DATABASE IF NOT EXISTS `{escaped}` CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
+    sql = f"CREATE DATABASE IF NOT EXISTS {quote_identifier(database)} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
     return query(sql, name=name, version=version, home=home)
+
+
+def ensure_database_user(
+    database: str,
+    user: str = "root",
+    password: str = "",
+    host: str = "localhost",
+    name: str = "default",
+    version: str = DEFAULT_MYSQL_VERSION,
+    home: Path | None = None,
+) -> subprocess.CompletedProcess[str] | None:
+    """Create a database user and grant access to one database.
+
+    The default local root user already works for the insecure ChatData dev
+    instance, so it is left untouched. Non-root users are created idempotently.
+    SQL is sent through stdin so passwords never appear in argv or process lists.
+    """
+    validate_safe_name(database, field="database name")
+    if user == "root" and not password:
+        return None
+    sql = "\n".join(
+        [
+            f"CREATE USER IF NOT EXISTS {sql_string_literal(user)}@{sql_string_literal(host)} IDENTIFIED BY {sql_string_literal(password)};",
+            f"GRANT ALL PRIVILEGES ON {quote_identifier(database)}.* TO {sql_string_literal(user)}@{sql_string_literal(host)};",
+            "FLUSH PRIVILEGES;",
+        ]
+    )
+    return subprocess.run(client_command(name=name, version=version, home=home), input=sql, check=True, capture_output=True, text=True)
 
 
 def export_layout(name: str = "default", version: str = DEFAULT_MYSQL_VERSION, home: Path | None = None) -> dict[str, str]:

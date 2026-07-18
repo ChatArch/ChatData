@@ -59,6 +59,10 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 
 `utf8mb4_bin` 是大小写敏感 collation，避免 Gitea 在启动/migrate 时提示 case-insensitive collation 风险。
 
+实例名和 database 名会用于本地路径、systemd unit 名或 SQL identifier。第一版只接受字母、数字、点、下划线和短横线，避免路径穿越或意外 SQL 名称。
+
+ChatData Python API 还提供 `ensure_database_user(...)`，用于上层工具创建业务用户并授予单库权限。ChatTea 的 `--mysql-user` / `--mysql-password-env` 就会调用这个 helper；密码通过 stdin 写给 `mysql` client，不会出现在命令行参数里。
+
 导入 SQL：
 
 ```bash
