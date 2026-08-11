@@ -5,7 +5,7 @@
     <a href="https://github.com/ChatArch/ChatData/actions/workflows/ci.yml">
         <img src="https://github.com/ChatArch/ChatData/actions/workflows/ci.yml/badge.svg" alt="Tests" />
     </a>
-    <a href="https://ChatArch.github.io/ChatData">
+    <a href="https://arch.gh.wzhecnu.cn/ChatData/">
         <img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Documentation" />
     </a>
 </div>
@@ -17,35 +17,44 @@
 
 # ChatData
 
-ChatArch database and data management toolkit
+ChatArch database and data-management toolkit. The current implementation focuses on a user-level MySQL runtime: install MySQL binaries, initialize instances, manage user services, run ping/query/import, and create databases.
 
 ## Quick Start
 
 ```bash
-pip install -e ".[dev]"
-chatdata --help
+pip install ChatData
 chatdata --version
-python -m pytest -q
-python -m build
+chatdata --tree
+chatdata mysql --help
 ```
 
-## CLI Contract
+For repository development:
 
-This template depends on `chatstyle>=0.1.0,<0.2.0` and `chatenv>=0.2.0,<0.3.0`. New commands should prefer:
+```bash
+pip install -e ".[dev,docs]"
+python -m pytest -q
+python -m build
+mkdocs build --strict
+```
 
-- `CommandSchema` / `CommandField` for inputs.
-- `add_interactive_option()` for the shared `-i/-I` switch.
-- `resolve_command_inputs()` for missing args, defaults, TTY behavior, and validation.
-- Generate `config.py` and a `chatenv.configs` entry point by default so the package is ChatEnv-discoverable; use `--without-chatenv-provider` only when ChatEnv integration is intentionally not needed.
+## CLI Entry Point
 
-## Layout
+The current command tree is rendered from the real Click registry and can be read back with `chatdata --tree`; the documentation site also provides a [CLI Tree](https://arch.gh.wzhecnu.cn/ChatData/en/cli-tree/) page.
 
-- `src/`: package source code
-- `tests/code-tests/`: code tests and migrated historical tests
-- `tests/cli-tests/`: real CLI tests, doc-first
-- `tests/mock-cli-tests/`: mock/fake CLI tests, doc-first
-- `docs/`: long-lived project docs built by mkdocs
+```text
+chatdata
+├── --help
+├── --version
+├── --tree
+└── mysql ...
+```
+
+## Documentation
+
+- Chinese documentation: https://arch.gh.wzhecnu.cn/ChatData/
+- CLI tree: https://arch.gh.wzhecnu.cn/ChatData/en/cli-tree/
+- English documentation: https://arch.gh.wzhecnu.cn/ChatData/en/
 
 ## Development Notes
 
-See `DEVELOP.md` and `AGENTS.md` before expanding the scaffold.
+Read `DEVELOP.md` and `AGENTS.md` before expanding the CLI. New commands should update tests, `chatdata --tree`, documentation, and the changelog in the same change.

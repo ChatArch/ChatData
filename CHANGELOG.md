@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.2 - 2026-08-11
+
+### Added
+
+- Add runtime-generated `chatdata --tree` support backed by the registered Click command tree.
+- Add CLI tests for `--help`, `--tree`, MySQL command coverage, and template `hello` absence.
+
+### Changed
+
+- Align package documentation metadata and MkDocs site URL with the ChatArch public docs domain.
+- Bound Click and docs dependency windows for repeatable patch release gates.
+
 ## 2026-07-18
 
 ### Added

@@ -1,15 +1,57 @@
 site_name: ChatData 文档
-site_url: https://ChatArch.github.io/ChatData
+site_url: https://arch.gh.wzhecnu.cn/ChatData/
 repo_url: https://github.com/ChatArch/ChatData
 theme:
   name: material
   language: zh
+  features:
+    - navigation.sections
+    - navigation.indexes
+markdown_extensions:
+  - attr_list
+  - md_in_html
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: zh
+          default: true
+          name: 中文
+          build: true
+          site_name: ChatData 文档
+        - locale: en
+          name: English
+          build: true
+          site_name: ChatData Documentation
+          nav_translations:
+            首页: Home
+            命令参考: Command Reference
+            CLI 树: CLI Tree
+            新手入门: Getting Started
+            MySQL 快速认知与常见概念: MySQL Basics
+            运维: Operations
+            MySQL 用户级运行时: MySQL User-Level Runtime
+            设计: Design
+            MySQL 免 sudo 用户级运行时: MySQL No-Sudo User Runtime
+extra:
+  alternate:
+    - name: 中文
+      link: /ChatData/
+      lang: zh
+    - name: English
+      link: /ChatData/en/
+      lang: en
 nav:
   - 首页: index.md
+  - 命令参考:
+      - CLI 树: cli-tree.md
   - 新手入门:
       - MySQL 快速认知与常见概念: getting-started/mysql-basics.md
   - 运维:
       - MySQL 用户级运行时: operations/mysql-runtime.md
   - 设计:
       - MySQL 免 sudo 用户级运行时: design/mysql-user-runtime.md
-  - English: index.en.md
