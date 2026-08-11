@@ -343,7 +343,7 @@ TCP port
   例如 127.0.0.1:3307。适合跨进程、跨语言、也可远程连接。
 
 Unix socket
-  例如 ~/.chatarch/chatdata/instances/mysql/default/run/mysql.sock。
+  例如 <chatdata-home>/instances/mysql/default/run/mysql.sock。
   只在本机使用，通常更安全、更直接。
 ```
 

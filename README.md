@@ -5,7 +5,7 @@
     <a href="https://github.com/ChatArch/ChatData/actions/workflows/ci.yml">
         <img src="https://github.com/ChatArch/ChatData/actions/workflows/ci.yml/badge.svg" alt="Tests" />
     </a>
-    <a href="https://ChatArch.github.io/ChatData">
+    <a href="https://arch.gh.wzhecnu.cn/ChatData/">
         <img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Documentation" />
     </a>
 </div>
@@ -17,35 +17,44 @@
 
 # ChatData
 
-ChatArch database and data management toolkit
+ChatArch 数据库与数据管理工具。当前实现聚焦用户级 MySQL runtime：安装 MySQL 二进制、初始化实例、管理用户级 service、执行 ping/query/import，并创建数据库。
 
 ## 快速开始
 
 ```bash
-pip install -e ".[dev]"
-chatdata --help
+pip install ChatData
 chatdata --version
-python -m pytest -q
-python -m build
+chatdata --tree
+chatdata mysql --help
 ```
 
-## CLI 规范
+开发本仓库时：
 
-这个模板默认依赖 `chatstyle>=0.1.0,<0.2.0` 和 `chatenv>=0.2.0,<0.3.0`，新的命令应优先使用：
+```bash
+pip install -e ".[dev,docs]"
+python -m pytest -q
+python -m build
+mkdocs build --strict
+```
 
-- `CommandSchema` / `CommandField` 描述输入。
-- `add_interactive_option()` 提供统一 `-i/-I`。
-- `resolve_command_inputs()` 统一缺参补问、默认值、TTY 与校验。
-- 默认生成 `config.py` 和 `chatenv.configs` entry point，使包可被 ChatEnv 发现；只有明确不需要 ChatEnv 接入时才使用 `--without-chatenv-provider`。
+## CLI 入口
 
-## 目录结构
+当前命令树来自真实 Click registry，可通过 `chatdata --tree` 回读；文档站也提供 [CLI 树](https://arch.gh.wzhecnu.cn/ChatData/cli-tree/) 页面。
 
-- `src/`：包源码
-- `tests/code-tests/`：代码测试和历史测试迁移
-- `tests/cli-tests/`：真实 CLI 测试，doc-first
-- `tests/mock-cli-tests/`：mock/fake CLI 测试，doc-first
-- `docs/`：长期维护文档，由 mkdocs 构建
+```text
+chatdata
+├── --help
+├── --version
+├── --tree
+└── mysql ...
+```
+
+## 文档
+
+- 中文文档：https://arch.gh.wzhecnu.cn/ChatData/
+- CLI 树：https://arch.gh.wzhecnu.cn/ChatData/cli-tree/
+- English documentation: https://arch.gh.wzhecnu.cn/ChatData/en/
 
 ## 开发说明
 
-扩展脚手架前，先阅读 `DEVELOP.md` 和 `AGENTS.md`。
+扩展 CLI 前，先阅读 `DEVELOP.md` 和 `AGENTS.md`。新增命令时应同步测试、`chatdata --tree`、文档和 changelog。

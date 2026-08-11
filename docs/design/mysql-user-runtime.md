@@ -42,7 +42,7 @@ MariaDB 和 Percona 作为后续可选 engine，不作为 v1 默认。
 默认根目录由 ChatEnv/配置决定，建议为：
 
 ```text
-~/.chatarch/chatdata/
+<chatdata-home>/
   downloads/
     mysql-8.4.6-linux-glibc2.28-x86_64.tar.xz
     manifests/
@@ -84,9 +84,9 @@ engine: mysql
 version: 8.4.x LTS, pinned by manifest
 port: 3307
 bind-address: 127.0.0.1
-socket: ~/.chatarch/chatdata/instances/mysql/default/run/mysql.sock
-data: ~/.chatarch/chatdata/instances/mysql/default/data
-logs: ~/.chatarch/chatdata/instances/mysql/default/logs
+socket: <chatdata-home>/instances/mysql/default/run/mysql.sock
+data: <chatdata-home>/instances/mysql/default/data
+logs: <chatdata-home>/instances/mysql/default/logs
 mysqlx: 默认关闭，后续需要时再启用 33060
 ```
 
@@ -285,4 +285,4 @@ systemctl --user enable chatdata-mysql-default.service
 <workspace>/projects/<chatdata-mysql-prototype>/playground/manual-runtime/
 ```
 
-原型不写 `~/.chatarch/chatdata`，先证明下载、解压、初始化、启动、查询、停止的基本链路。成功后再把稳定路径提升为 `ChatData` CLI 实现。
+原型不写真实 ChatArch home 路径，先证明下载、解压、初始化、启动、查询、停止的基本链路。成功后再把稳定路径提升为 `ChatData` CLI 实现。

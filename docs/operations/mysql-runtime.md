@@ -7,7 +7,7 @@ ChatData 第一版 MySQL 能力已经落到 `chatdata mysql ...`。它的定位�
 默认根目录来自 ChatEnv 的 ChatArch home：
 
 ```text
-~/.chatarch/chatdata/
+<chatdata-home>/
   downloads/                         # 官方 MySQL tarball 和校验文件
   runtimes/mysql/8.4.6/               # 解压后的 MySQL runtime
   runtimes/mysql/current -> 8.4.6
@@ -29,7 +29,7 @@ chatdata mysql doctor
 chatdata mysql install --version 8.4.6
 ```
 
-`install` 会从 MySQL 官方 archive 下载 generic Linux tarball，读取 `.md5` sidecar 做校验，安全解压到 `~/.chatarch/chatdata/runtimes/mysql/<version>`，然后运行 `mysqld --version` 做 smoke。
+`install` 会从 MySQL 官方 archive 下载 generic Linux tarball，读取 `.md5` sidecar 做校验，安全解压到 `<chatdata-home>/runtimes/mysql/<version>`，然后运行 `mysqld --version` 做 smoke。
 
 ## 初始化并启动实例
 
