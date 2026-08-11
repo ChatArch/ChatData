@@ -1,11 +1,25 @@
 # Changelog
 
+## 0.1.3 - 2026-08-12
+
+### Added
+
+- Add the MkDocs Material emoji renderer baseline so Material icon shorthand cannot leak into generated/live docs.
+- Add docs and workflow contract tests for renderer config, README/live CLI tree alignment, publish guards, and installed CLI smoke.
+
+### Changed
+
+- Harden package publishing with a default-branch ancestry guard before OIDC PyPI publishing.
+- Expand CI to Python 3.10 / 3.11 / 3.12 and smoke installed `chatdata --version` and `chatdata --tree` entry points.
+- Point package homepage and documentation metadata at the ChatArch docs domain.
+- Sync README / README.en CLI examples to the full live runtime tree.
+
 ## 0.1.2 - 2026-08-11
 
 ### Added
 
 - Add runtime-generated `chatdata --tree` support backed by the registered Click command tree.
-- Add CLI tests for `--help`, `--tree`, MySQL command coverage, and template `hello` absence.
+- Add CLI tests for `--help`, `--tree`, MySQL command coverage, and scaffold sample command absence.
 
 ### Changed
 

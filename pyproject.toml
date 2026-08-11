@@ -18,9 +18,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ChatArch/ChatData"
-Repository = "https://github.com/ChatArch/ChatData"
+Homepage = "https://arch.gh.wzhecnu.cn/ChatData/"
 Documentation = "https://arch.gh.wzhecnu.cn/ChatData/"
+Repository = "https://github.com/ChatArch/ChatData"
 
 [project.scripts]
 chatdata = "chatdata.cli:main"
@@ -30,7 +30,7 @@ chatdata = "chatdata.config"
 
 [project.optional-dependencies]
 dev = ["build", "pytest", "twine"]
-docs = ["mkdocs>=1.6,<2.0", "mkdocs-material>=9.5,<9.7", "mkdocs-static-i18n>=1.2,<2.0", "mike>=2.0,<3.0"]
+docs = ["mkdocs>=1.6,<2.0", "mkdocs-material>=9.5,<10.0", "mkdocs-static-i18n>=1.2,<2.0", "mike>=2.0,<3.0"]
 
 [tool.setuptools.dynamic]
 version = {attr = "chatdata.__version__"}
