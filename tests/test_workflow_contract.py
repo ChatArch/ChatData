@@ -8,6 +8,7 @@ def test_ci_workflow_runs_matrix_and_installed_cli_smoke():
     assert "python -m pytest -q" in workflow
     assert "chatdata --version" in workflow
     assert "chatdata --tree" in workflow
+    assert "chatdata --tree-brief" in workflow
     assert "mkdocs build --strict" in workflow
     assert "python -m build" in workflow
 

@@ -2,7 +2,8 @@
 
 ## CLI Rules
 
-- Use `chatstyle>=0.1.0,<0.2.0` and `chatenv>=0.2.0,<0.3.0` as the canonical CLI interaction runtime.
+- Use `chatstyle>=0.2.0,<0.3.0` and `chatenv>=0.2.10,<0.3.0` as the canonical CLI and profile runtime.
+- Keep the explicit `chatdata` root name and use ChatStyle `add_tree_option()` for `--tree` and `--tree-brief`; do not add a package-local tree renderer.
 - Prefer `CommandSchema`, `CommandField`, `add_interactive_option()`, and `resolve_command_inputs()` for new commands.
 - Missing required args should auto-enter interactive mode when recoverable.
 - `-i` forces interactive mode; `-I` disables prompting and must fail fast.
@@ -16,6 +17,7 @@
 - Put real CLI coverage under `tests/cli-tests/`.
 - Put mock/fake CLI coverage under `tests/mock-cli-tests/`.
 - Keep `README.md`, `docs/`, and `CHANGELOG.md` in sync with user-facing changes.
+- Verify both `chatdata --tree` and `chatdata --tree-brief` against the registered Click command surface.
 
 ## Automation
 

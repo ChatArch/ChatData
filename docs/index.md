@@ -12,6 +12,7 @@ ChatData 是 ChatArch 的数据库与数据管理工具。当前已实现的是�
 
     ```bash
     chatdata --tree
+    chatdata --tree-brief
     ```
 
 -   **MySQL 运行时**
