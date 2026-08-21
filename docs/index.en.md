@@ -12,6 +12,7 @@ ChatData is the ChatArch database and data-management toolkit. The current imple
 
     ```bash
     chatdata --tree
+    chatdata --tree-brief
     ```
 
 -   **MySQL Runtime**

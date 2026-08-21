@@ -1,6 +1,8 @@
 from pathlib import Path
 
-from chatdata.cli import main, render_cli_tree
+from chatstyle import render_click_tree
+
+from chatdata.cli import main
 
 
 PUBLIC_DOCS = (
@@ -19,7 +21,7 @@ def test_mkdocs_material_renderer_and_docs_metadata_contract():
 
     assert "site_url: https://arch.gh.wzhecnu.cn/ChatData/" in mkdocs
     assert "name: material" in mkdocs
-    assert "mkdocs-material>=9.5,<10.0" in pyproject
+    assert "mkdocs-material>=9.5,<9.7" in pyproject
     assert "pymdownx.emoji" in mkdocs
     assert "material.extensions.emoji.twemoji" in mkdocs
     assert "material.extensions.emoji.to_svg" in mkdocs
@@ -29,14 +31,15 @@ def test_mkdocs_material_renderer_and_docs_metadata_contract():
 
 
 def test_public_docs_match_live_tree_and_no_material_literals():
-    tree = render_cli_tree(main)
+    tree = render_click_tree(main, root_name="chatdata")
     required_lines = [
-        "chatdata  # ChatArch database and data management toolkit.",
-        "├── --tree  # Print the registered command tree.",
+        "chatdata",
+        "├── --tree  # Print the registered CLI tree and exit.",
+        "├── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.",
         "└── mysql  # Manage user-level MySQL runtimes and instances.",
-        "    │   ├── start [--name <NAME>]  # Start a MySQL user service.",
-        "    │   └── logs [--name <NAME>] [--lines <LINES>]  # Show MySQL user service journal logs.",
-        "        └── create <DATABASE> [--name <NAME>] [--version <VERSION>] [--home <HOME>]  # Create a utf8mb4 database if it does not exist.",
+        "start [--name NAME]  # Start a MySQL user service.",
+        "logs [--name NAME] [--lines LINES]  # Show MySQL user service journal logs.",
+        "create <DATABASE> [--name NAME] [--version VERSION] [--home HOME]  # Create a utf8mb4 database if it does not exist.",
     ]
     for rel in PUBLIC_DOCS:
         text = Path(rel).read_text(encoding="utf-8")

@@ -27,5 +27,6 @@ jobs:
       - run: python -m pytest -q
       - run: chatdata --version
       - run: chatdata --tree
+      - run: chatdata --tree-brief
       - run: python -m build
       - run: mkdocs build --strict

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.4 - 2026-08-21
+
+### Added
+
+- Add `chatdata --tree-brief` for a compact view of the registered command surface.
+- Add installed-console-script CI coverage for the brief tree contract.
+
+### Changed
+
+- Replace the package-local Click tree renderer with ChatStyle's shared `add_tree_option()` runtime.
+- Align runtime dependencies with `chatstyle>=0.2.0,<0.3.0` and `chatenv>=0.2.10,<0.3.0`.
+- Refresh bilingual CLI documentation from the shared full and brief tree renderer.
+
 ## 0.1.3 - 2026-08-12
 
 ### Added
